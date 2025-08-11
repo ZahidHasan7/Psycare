@@ -19,59 +19,48 @@ const generateAccessAndRefreshToken = async (userId) => {
   }
 };
 
+// Doctor Register (from Feature 2)
 const doctorRegister = async (req, res) => {
   try {
-    // --- DATA RECEPTION AND VALIDATION ---
-
-    // STEP 1: Destructure fields matching EXACTLY what the frontend sends.
     const {
       fullName,
       email,
       password,
-      phoneNumber,       // CHANGED from 'phone'
-      specializations,   // CHANGED from 'specialization'
+      phoneNumber,
+      specializations,
       bio,
       address,
-      education,         // This is now a JSON string: '{"degree":"...", "university":"...", "year":"..."}'
+      education,
       workExperience,
-      licenseNumber,     // CHANGED from 'license'
-      appointmentFee,    // CHANGED from 'fees'
+      licenseNumber,
+      appointmentFee,
     } = req.body;
 
-    // STEP 2: Handle file uploads from Multer/Cloudinary. This part was already good!
     const certificateFile = req.files?.certificate?.[0];
     const profilePicFile = req.files?.profilePic?.[0];
 
-    // --- VALIDATION LOGIC (Mostly unchanged, but simplified) ---
-
-    // Check for missing fields
+    // --- VALIDATION LOGIC ---
     const requiredFields = { fullName, email, password, phoneNumber, specializations, bio, address, education, workExperience, licenseNumber, appointmentFee };
     for (const [key, value] of Object.entries(requiredFields)) {
-        if (!value || value.trim() === "") {
+        if (!value || (typeof value === 'string' && value.trim() === "")) {
             return res.status(400).json({ success: false, message: `Field is required: ${key}` });
         }
     }
-
     if (!certificateFile || !profilePicFile) {
       return res.status(400).json({ success: false, message: "Both certificate and profile picture are required" });
     }
-
     const existingDoctor = await Doctor.findOne({ email });
     if (existingDoctor) {
-      return res.status(409).json({ success: false, message: "A doctor with this email already exists" }); // 409 Conflict is more specific
+      return res.status(409).json({ success: false, message: "A doctor with this email already exists" });
     }
-
     if (!validator.isEmail(email)) {
       return res.status(400).json({ success: false, message: "Please enter a valid email" });
     }
-
-    if (password.length < 6) { // It's good practice to enforce a slightly longer password
+    if (password.length < 6) {
       return res.status(400).json({ success: false, message: "Password must be at least 6 characters long" });
     }
 
     // --- DATA PREPARATION ---
-
-    // STEP 3: Parse the 'education' JSON string from the form.
     let educationData;
     try {
         educationData = JSON.parse(education);
@@ -80,30 +69,24 @@ const doctorRegister = async (req, res) => {
     }
 
     // --- DATABASE CREATION ---
-
-    // STEP 4: Create the doctor object with fields matching your 'doctor.model.js'
     const doctor = await Doctor.create({
       fullName,
       email,
       password,
-      phone: phoneNumber,                 // Map to 'phone'
-      specialization: specializations.split(",").map(s => s.trim()), // Clean and split string into an array
+      phone: phoneNumber,
+      specialization: specializations.split(",").map(s => s.trim()),
       bio,
       address,
       workExperience,
-      license: licenseNumber,             // Map to 'license'
-      fees: Number(appointmentFee),       // Map to 'fees' and ensure it's a Number
-      certificate: certificateFile.path,  // Get path from Cloudinary
-      profilePic: profilePicFile.path,    // Get path from Cloudinary
-      // Map education fields
+      license: licenseNumber,
+      fees: Number(appointmentFee),
+      certificate: certificateFile.path,
+      profilePic: profilePicFile.path,
       degree: educationData.degree,
-      medicalCollege: educationData.university, // Map 'university' to 'medicalCollege'
+      medicalCollege: educationData.university,
       yearOfCompletion: educationData.year,
     });
     
-    // --- SUCCESS RESPONSE ---
-    
-    // STEP 5: Send a simple success response. No token, no auto-login.
     return res.status(201).json({
       success: true,
       message: "Doctor registered successfully. Please log in.",
@@ -111,7 +94,6 @@ const doctorRegister = async (req, res) => {
 
   } catch (error) {
     console.error("Register Doctor Error:", error);
-    // Send a generic server error
     return res.status(500).json({
       success: false,
       message: "An internal server error occurred during registration.",
@@ -119,7 +101,58 @@ const doctorRegister = async (req, res) => {
   }
 };
 
-// NOTE: All other functions from this file will be added in later features.
+// Doctor Login (New for Feature 3)
+const doctorLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.json({
+        success: false,
+        message: "Please provide both email and password",
+      });
+    }
+
+    const doctor = await Doctor.findOne({ email });
+
+    if (!doctor) {
+      return res.json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const isMatch = await doctor.isPasswordCorrect(password);
+
+    if (!isMatch) {
+      return res.json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const { accessToken } = await generateAccessAndRefreshToken(doctor._id);
+
+    const loggedInDoctor = await Doctor.findById(doctor._id).select(
+      "-password"
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: loggedInDoctor,
+      token: accessToken,
+    });
+  } catch (error) {
+    console.log("Doctor login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong during login",
+    });
+  }
+};
+
 export {
   doctorRegister,
+  doctorLogin,
 };
