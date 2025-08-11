@@ -1,6 +1,7 @@
 import { Patient } from "../models/patient.model.js";
 import validator from "validator";
 import { ApiError } from "../utils/ApiError.js";
+// NOTE: Other models like Story, Appointment are not used in this feature yet.
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -19,12 +20,11 @@ const generateAccessAndRefreshToken = async (userId) => {
   }
 };
 
-// Register Patient
+// Register Patient (from Feature 2)
 const registerPatient = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if patient exists
     const existing = await Patient.findOne({ email });
     if (existing) {
       return res
@@ -33,7 +33,6 @@ const registerPatient = async (req, res) => {
     }
 
     if (!validator.isEmail(email)) {
-      // throw new ApiError(401, 'Please enter a valid email')
       return res.json({
         success: false,
         message: "Please enter a valid email",
@@ -41,7 +40,6 @@ const registerPatient = async (req, res) => {
     }
 
     if (password.length < 4) {
-      // throw new ApiError(401, 'Please enter a strong password')
       return res.json({
         success: false,
         message: "Please enter a strong password",
@@ -62,7 +60,6 @@ const registerPatient = async (req, res) => {
     }
 
     const accessToken = await generateAccessAndRefreshToken(patient._id);
-    // const refreshToken = patient.generateRefreshToken();
 
     res.status(201).json({
       message: "Patient registered successfully",
@@ -75,7 +72,59 @@ const registerPatient = async (req, res) => {
   }
 };
 
-// NOTE: All other functions from this file will be added in later features.
+
+// login patient (New for Feature 3)
+const loginPatient = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.json({
+        success: false,
+        message: "Please provide both email and password",
+      });
+    }
+
+    const patient = await Patient.findOne({ email });
+
+    if (!patient) {
+      return res.json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const isMatch = await patient.isPasswordCorrect(password);
+
+    if (!isMatch) {
+      return res.json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const { accessToken } = await generateAccessAndRefreshToken(patient._id);
+
+    const loggedInPatient = await Patient.findById(patient._id).select(
+      "-password"
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: loggedInPatient,
+      token: accessToken,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong during login",
+    });
+  }
+};
+
 export { 
   registerPatient, 
+  loginPatient, 
 };
