@@ -1,10 +1,30 @@
 import express from 'express'
-import { registerPatient } from '../controllers/patient.controller.js';
-// NOTE: jwtVerify and other controllers will be used in later features.
+import { bookAppointment, getAllStories, getMyStories, loginPatient, registerPatient, updatePatientProfile,  getStoryById ,uploadStories } from '../controllers/patient.controller.js';
+import { jwtVerify } from '../middlewares/auth.middleware.js';
+
 
 const patientRouter = express.Router()
 
 patientRouter.post('/register', registerPatient)
+patientRouter.post('/login', loginPatient)
+patientRouter.put('/update-profile', jwtVerify, updatePatientProfile);
 
-// NOTE: All other routes from this file will be added in later features.
+// route for booking
+
+patientRouter.post('/doctor-booking', jwtVerify, bookAppointment);
+
+// End point for uplaod stories
+patientRouter.post('/upload-story',jwtVerify, uploadStories)
+patientRouter.get("/my-stories", jwtVerify, getMyStories);
+
+// all stories
+patientRouter.get("/all-stories", jwtVerify, getAllStories);
+ //patientRouter.get("/all-stories",  getAllStories);
+
+patientRouter.get('/my-stories', jwtVerify, getMyStories);
+
+patientRouter.get("/story/:storyId", jwtVerify, getStoryById);
+
+
+
 export default patientRouter;
