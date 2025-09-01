@@ -9,8 +9,14 @@ Mental health is a journey, and no one should have to walk it alone. Yet, many d
 
 We're not just building an app; we're building a community dedicated to healing and understanding.
 
+# For Patients (Users)
+
+
 # ✨ Features That Set Us Apart
 We designed PsyCare with you in mind, focusing on features that provide real comfort and tangible support.
+
+# Personalized Dashboard:
+A clean, welcoming space that provides a quick overview of your upcoming appointments, recent activity, and unread messages.
 
 # Speak Freely, Stay Anonymous
 Tired of putting on a brave face? Here, you don’t have to. Post your thoughts and problems with the comfort of complete anonymity. Share what’s on your mind without your name, your face, or your history attached. It’s your story, told on your terms.
@@ -22,27 +28,58 @@ Sometimes, a human connection makes all the difference. Our new video calling fe
 When you share a problem, our intelligent AI assistant gently offers suggestions by connecting you with similar, previously addressed issues. It’s like having a wise friend who provides immediate perspective while you await professional advice.
 
 # Find Your Personal Guide
-Ready for a deeper connection? Our subscription model lets you choose a preferred consultant and stick with them. Build a trusting relationship with a professional who understands your journey and is dedicated to your long-term growth.
+Ready for a deeper connection? Build a trusting relationship with a professional who understands your journey and is dedicated to your long-term growth. By paying the particular doctor you can book private video call.
 
-# A Library of Wisdom at Your Fingertips
-After a session, your consultant leaves detailed notes and summaries for you. This creates a personal library of advice and reflections that you can revisit anytime, helping you track your progress and reinforce what you’ve learned.
+# Browse Consultant Profiles:
+Find the right professional for you. View detailed profiles that include specializations, qualifications, professional bios, and user ratings.
+
 
 # Navigate by What Matters to You
 Feeling overwhelmed by a specific issue? Our topic-based filters allow you to easily sort through community discussions and find the conversations that are most relevant to you, whether it's about anxiety, relationships, or work-related stress.
 
-🛠️ Technology Stack
+# Public Profile Customization:
+Build a professional and welcoming public profile. You can update your bio, list your specializations, upload qualifications, and set your consultation rates.
+
+# For Consultants (Professionals)
+# ✨ Features That Set Us Apart
+
+This feature set provides a comprehensive toolkit for professionals to manage their clients, share their expertise, and build their online practice.
+
+# Professional Dashboard:
+An all-in-one command center showing key metrics like active clients, monthly earnings, upcoming appointments, and pending community questions.
+
+# Client Management Portal:
+A dedicated space to manage all your subscribed clients. Access their history, manage session notes, and communicate securely.
+
+# Conduct Secure Video Consultations: 
+A seamlessly integrated, high-quality video calling interface to conduct your private sessions without needing any third-party software.
+
+# Community Q&A Hub: 
+Share your expertise with the wider community by answering anonymous questions. You can filter problems by your area of specialization to provide targeted advice.
+
+# Create & Manage Session Notes:
+After each session, easily create detailed, private notes for your clients. This helps them track their progress and provides a lasting record of your guidance.
+
+# Public Profile Customization:
+Build a professional and welcoming public profile. You can update your bio, list your specializations, upload qualifications, and set your consultation rates.
+
+# 🛠️ Technology Stack
 
 We use a modern and robust tech stack to ensure a secure, scalable, and seamless experience.
 
 Frontend - React.js (Vite) , Tailwind CSS
+
 Backend - Node.js	, Express.js
+
 Database - MongoDB	
+
 AI - LLM APIs (Gemini)
+
 Video - Socket
 
 Export to Sheets
 
-🚀 Getting Started
+# 🚀 Getting Started
 Want to get the project up and running on your local machine? Just follow these simple steps.
 
 Prerequisites:
@@ -72,31 +109,46 @@ Install dependencies for the frontend and backend:
 Bash
 
 # For the frontend
-cd client
+
+cd frontend
+
 npm install
 
 # For the backend
-cd ../server
+cd server
+
 npm install
+
 Set up your environment variables:
+
 Create a .env file in the server directory and add your configuration details (database credentials, API keys, etc.).
 
 DB_HOST=localhost
+
 DB_USER=your_db_user
+
 DB_PASSWORD=your_db_password
+
 JWT_SECRET=your_jwt_secret
+
 OPENAI_API_KEY=your_api_key
+
 Run the application:
 
 Bash
 
 # Start the backend server
+
 cd server
+
 npm start
 
 # Start the frontend development server
+
 cd client
+
 npm run dev
+
 Your PsyCare application should now be running locally at http://localhost:5173!
 
 🤝 How to Contribute
